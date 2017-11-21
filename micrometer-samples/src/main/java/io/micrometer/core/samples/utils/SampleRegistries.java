@@ -19,6 +19,7 @@ import com.netflix.spectator.atlas.AtlasConfig;
 import com.sun.net.httpserver.HttpServer;
 import io.micrometer.atlas.AtlasMeterRegistry;
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.MockClock;
 import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.datadog.DatadogMeterRegistry;
 import io.micrometer.ganglia.GangliaMeterRegistry;
@@ -26,6 +27,8 @@ import io.micrometer.graphite.GraphiteMeterRegistry;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxMeterRegistry;
 import io.micrometer.jmx.JmxMeterRegistry;
+import io.micrometer.newrelic.NewRelicConfig;
+import io.micrometer.newrelic.NewRelicMeterRegistry;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.micrometer.statsd.StatsdConfig;
@@ -82,7 +85,7 @@ public class SampleRegistries {
                 try {
                     props.load(SampleRegistries.class.getResourceAsStream("/datadog.properties"));
                 } catch (IOException e) {
-                    throw new RuntimeException("must have application.properties with datadog.apiKey defined", e);
+                    throw new RuntimeException("must have datadog.properties with datadog.apiKey defined", e);
                 }
             }
 
@@ -148,5 +151,24 @@ public class SampleRegistries {
                 return null;
             }
         });
+    }
+
+    public static NewRelicMeterRegistry newRelic() {
+        return new NewRelicMeterRegistry(new NewRelicConfig() {
+            private final Properties props = new Properties();
+
+            {
+                try {
+                    props.load(SampleRegistries.class.getResourceAsStream("/new-relic.properties"));
+                } catch (IOException e) {
+                    throw new RuntimeException("must have new-relic.properties with newrelic.licenseKey defined", e);
+                }
+            }
+
+            @Override
+            public String get (String k){
+                return props.getProperty(k);
+            }
+        }, new MockClock());
     }
 }

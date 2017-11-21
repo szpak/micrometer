@@ -3,7 +3,7 @@ dependencies {
     compile 'colt:colt:1.2.0'
     compile 'ch.qos.logback:logback-classic:latest.release'
 
-    ['atlas', 'prometheus', 'datadog', 'ganglia', 'graphite', 'jmx', 'influx', 'statsd'].each { sys ->
+    ['atlas', 'prometheus', 'datadog', 'ganglia', 'graphite', 'jmx', 'influx', 'statsd', 'new-relic'].each { sys ->
         compile project(":micrometer-registry-$sys")
     }
 
